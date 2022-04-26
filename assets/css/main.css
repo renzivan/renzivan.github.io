@@ -3907,3 +3907,8 @@ input, select, textarea {
 			}
 
 		}
+
+
+.image {
+	max-width: 495px;
+}
