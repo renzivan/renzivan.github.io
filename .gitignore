@@ -1,7 +1,10 @@
 # Local agent / IDE config
-.claude/
 .cursor/
 .vscode/
+
+# Python bytecode
+__pycache__/
+*.pyc
 
 # OS
 .DS_Store
