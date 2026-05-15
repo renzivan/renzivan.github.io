@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Renz Ivan Enguio — Frontend-focused fullstack engineer</title>
+<meta name="description" content="Eight years shipping pixel-precise frontends in Vue, React, TypeScript, Quasar. AI-augmented engineering practice." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Inter:wght@300..600&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --paper:        oklch(0.972 0.006 75);
+    --paper-deep:   oklch(0.945 0.010 75);
+    --ink:          oklch(0.18 0.018 70);
+    --ink-soft:     oklch(0.36 0.014 70);
+    --rule:         oklch(0.82 0.012 70);
+    --mute:         oklch(0.55 0.010 70);
+    --accent:       oklch(0.55 0.165 28);
+    --accent-soft:  oklch(0.92 0.040 35);
+    --highlight:    oklch(0.92 0.020 90);
+
+    --display: 'Fraunces', 'Times New Roman', serif;
+    --body:    'Inter', system-ui, sans-serif;
+
+    --measure: 64ch;
+    --gutter: clamp(1.25rem, 4vw, 3rem);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  ::selection { background: var(--accent); color: var(--paper); }
+
+  .display {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 144, 'SOFT' 0;
+    font-weight: 380;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+  }
+
+  .skip-link {
+    position: absolute; left: 1rem; top: -3rem;
+    padding: 0.5rem 1rem; background: var(--ink); color: var(--paper);
+    transition: top 200ms cubic-bezier(.2,.8,.2,1);
+  }
+  .skip-link:focus { top: 1rem; }
+
+  /* Masthead */
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+    padding: 1.25rem var(--gutter);
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 1rem;
+    position: sticky; top: 0;
+    background: color-mix(in oklab, var(--paper) 92%, transparent);
+    backdrop-filter: blur(8px);
+    z-index: 20;
+    font-size: 0.8125rem;
+  }
+  .masthead .logo {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 11;
+    font-weight: 500;
+    font-size: 1.05rem;
+    letter-spacing: 0.005em;
+  }
+  .masthead nav { display: flex; gap: 1.75rem; }
+  .masthead nav a {
+    color: var(--ink-soft);
+    transition: color 200ms;
+  }
+  .masthead nav a:hover { color: var(--accent); }
+  .masthead .meta {
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+  }
+  @media (max-width: 720px) {
+    .masthead .meta { display: none; }
+    .masthead nav { gap: 1rem; }
+  }
+
+  /* Issue rule */
+  .issue {
+    padding: 0.5rem var(--gutter);
+    border-bottom: 1px solid var(--rule);
+    display: flex; justify-content: space-between;
+    font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Hero */
+  .hero {
+    padding: clamp(3rem, 9vw, 7.5rem) var(--gutter) clamp(2.5rem, 6vw, 4.5rem);
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .hero .eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 2.5rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .hero .eyebrow .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 144, 'SOFT' 30;
+    font-weight: 320;
+    font-size: clamp(2.75rem, 9.5vw, 8.5rem);
+    letter-spacing: -0.025em;
+    line-height: 0.92;
+    margin: 0 0 2.5rem;
+    max-width: 14ch;
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-variation-settings: 'opsz' 144, 'SOFT' 100;
+    font-weight: 320;
+    color: var(--accent);
+  }
+  .hero .lede {
+    font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    line-height: 1.5;
+    max-width: 48ch;
+    color: var(--ink-soft);
+    margin: 0 0 2rem;
+  }
+  .hero .lede b { color: var(--ink); font-weight: 500; }
+  .hero .byline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.25rem 2.25rem;
+    border-top: 1px solid var(--rule);
+    padding-top: 1.5rem;
+    margin-top: 2.5rem;
+    max-width: 62rem;
+  }
+  .byline dt {
+    font-size: 0.66rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 0.4rem;
+  }
+  .byline dd {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+  .byline dd .stack-row { color: var(--ink-soft); }
+
+  /* Section pattern */
+  .section {
+    padding: clamp(3rem, 7vw, 6rem) var(--gutter);
+    border-bottom: 1px solid var(--rule);
+  }
+  .section-head {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: 2rem;
+    align-items: baseline;
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+  @media (max-width: 720px) {
+    .section-head { grid-template-columns: 1fr; gap: 0.5rem; }
+  }
+  .section-head .num {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 11;
+    font-weight: 400;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+  .section-head h2 {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 96, 'SOFT' 20;
+    font-weight: 360;
+    font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0;
+  }
+  .section-head .deck {
+    grid-column: 2;
+    margin-top: 1.25rem;
+    max-width: 50ch;
+    color: var(--ink-soft);
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+  @media (max-width: 720px) {
+    .section-head .deck { grid-column: 1; }
+  }
+
+  /* Projects: bibliography pattern */
+  .projects { margin: 0; padding: 0; list-style: none; }
+  .project {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 32rem) 1fr;
+    gap: 2rem;
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--rule);
+    align-items: start;
+  }
+  .project:last-child { border-bottom: 1px solid var(--rule); }
+  @media (max-width: 880px) {
+    .project { grid-template-columns: 3rem 1fr; }
+    .project .figure { grid-column: 1 / -1; grid-row: 2; margin-top: 1.25rem; }
+  }
+  .project .num {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 300;
+    font-size: 2.25rem;
+    color: var(--mute);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .project .body h3 {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 60, 'SOFT' 20;
+    font-weight: 380;
+    font-size: clamp(1.75rem, 2.8vw, 2.35rem);
+    letter-spacing: -0.015em;
+    line-height: 1.05;
+    margin: 0 0 0.4rem;
+  }
+  .project .role {
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin: 0 0 1.1rem;
+  }
+  .project .role .pill {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 999px;
+    margin-left: 0.4rem;
+    font-size: 0.62rem;
+  }
+  .project p {
+    margin: 0 0 1.25rem;
+    color: var(--ink-soft);
+    max-width: 56ch;
+  }
+  .project .stack {
+    font-size: 0.85rem;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.01em;
+  }
+  .project .stack span:not(:last-child)::after {
+    content: ' · '; color: var(--rule); margin: 0 0.1em;
+  }
+  .project .links {
+    display: flex; flex-wrap: wrap; gap: 1.25rem 1.75rem;
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 11;
+    font-size: 0.92rem;
+  }
+  .project .links a {
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 1px;
+    transition: color 200ms, border-color 200ms;
+  }
+  .project .links a:hover { color: var(--accent); border-color: var(--accent); }
+  .project .links a::after { content: ' →'; font-family: var(--body); opacity: 0.55; }
+  .project .figure {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--paper-deep);
+    position: relative;
+  }
+  .project .figure img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.25) contrast(1.02);
+    transition: filter 600ms cubic-bezier(.2,.7,.2,1), transform 800ms cubic-bezier(.2,.7,.2,1);
+  }
+  .project:hover .figure img {
+    filter: grayscale(0) contrast(1);
+    transform: scale(1.03);
+  }
+  .project .caption {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-top: 0.6rem;
+  }
+
+  /* Flagship variant */
+  .project.flagship .body h3 {
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+  }
+  .project.flagship {
+    background: linear-gradient(180deg, var(--accent-soft), transparent 80%);
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    margin: 0 -1.25rem;
+  }
+
+  /* About: editorial column */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: clamp(2rem, 4vw, 4rem);
+  }
+  @media (max-width: 880px) {
+    .about-grid { grid-template-columns: 1fr; }
+  }
+  .pullquote {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 96, 'SOFT' 50;
+    font-weight: 320;
+    font-style: italic;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 0 0 2rem;
+    text-indent: -0.4em;
+    max-width: 22ch;
+  }
+  .pullquote::before { content: '“'; color: var(--accent); }
+  .pullquote::after { content: '”'; color: var(--accent); }
+  .pullquote .small {
+    display: block;
+    font-family: var(--body);
+    font-style: normal;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-top: 1.25rem;
+    text-indent: 0;
+  }
+  .about-body p {
+    margin: 0 0 1.15rem;
+    max-width: var(--measure);
+    color: var(--ink-soft);
+  }
+  .about-body p b { color: var(--ink); font-weight: 500; }
+
+  /* Capabilities */
+  .caps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0;
+    margin-top: 3rem;
+    border-top: 1px solid var(--rule);
+  }
+  .caps dl {
+    margin: 0;
+    padding: 1.5rem 1.25rem 1.5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .caps dt {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 11;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin: 0 0 0.85rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .caps dt .idx { color: var(--accent); margin-right: 0.5em; }
+  .caps dd { margin: 0 0 0.35rem; color: var(--ink); font-size: 0.95rem; }
+  .caps dd small { color: var(--mute); font-size: 0.78rem; display: block; padding-left: 0.85rem; margin-top: 0.1rem; }
+
+  /* Contact */
+  .contact-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 720px) {
+    .contact-card { grid-template-columns: 1fr; }
+  }
+  .contact-card a {
+    padding: 1.75rem 1.25rem 1.75rem 0;
+    border-bottom: 1px solid var(--rule);
+    display: block;
+    transition: background 250ms;
+  }
+  .contact-card a:hover { background: var(--accent-soft); padding-left: 1rem; padding-right: 0.25rem; }
+  .contact-card a:hover .channel-name { color: var(--accent); }
+  .contact-card .label {
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 0.5rem;
+  }
+  .contact-card .channel-name {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 60, 'SOFT' 20;
+    font-weight: 380;
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    letter-spacing: -0.01em;
+    transition: color 200ms;
+  }
+
+  /* Colophon footer */
+  .colophon {
+    padding: clamp(2.5rem, 5vw, 4rem) var(--gutter);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem;
+    color: var(--mute);
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  @media (max-width: 720px) {
+    .colophon { grid-template-columns: 1fr; }
+  }
+  .colophon .left b { color: var(--ink); font-weight: 500; font-family: var(--display); font-variation-settings: 'opsz' 11; }
+  .colophon .right { text-align: right; font-variant-numeric: tabular-nums; }
+  @media (max-width: 720px) { .colophon .right { text-align: left; } }
+
+  .variant-switch {
+    position: fixed;
+    bottom: 1rem; right: 1rem;
+    z-index: 50;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--body);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.6rem 0.85rem;
+    border-radius: 999px;
+    display: flex; gap: 0.6rem; align-items: center;
+  }
+  .variant-switch a {
+    opacity: 0.6;
+    transition: opacity 180ms;
+  }
+  .variant-switch a:hover { opacity: 1; }
+  .variant-switch a.active { opacity: 1; color: var(--accent-soft); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001s !important;
+      transition-duration: 0.001s !important;
+    }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="masthead">
+  <div class="logo">Renz Ivan Enguio</div>
+  <nav aria-label="Primary">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a href="cv.pdf" target="_blank" rel="noopener">CV</a>
+  </nav>
+  <div class="meta"><span id="now-meta">Vol. VIII</span></div>
+</header>
+
+<div class="issue" aria-hidden="true">
+  <span>An engineering portfolio</span>
+  <span>Issue <span id="year-issue"></span></span>
+  <span>Manila &amp; remote</span>
+</div>
+
+<main id="main">
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="eyebrow"><span class="dot"></span><span>Available for senior frontend &amp; fullstack roles</span></div>
+  <h1 class="display" id="hero-title">
+    A frontend<br/>
+    that <em>holds up</em><br/>
+    in production.
+  </h1>
+  <p class="lede">
+    I'm <b>Renz Ivan Enguio</b>, a frontend-focused fullstack engineer with <span class="yoe">8</span>+ years shipping Vue, React, TypeScript and Quasar across web, iOS and Android. AI-augmented in practice, not in costume: Claude Code, Codex and Cursor as daily drivers, custom skills, agents and MCPs in the loop.
+  </p>
+  <dl class="byline">
+    <div><dt>Focus</dt><dd>Frontend engineering, cross-platform</dd></div>
+    <div><dt>Primary stack</dt><dd class="stack-row">Vue 3, React, TypeScript, Quasar, Capacitor</dd></div>
+    <div><dt>Backend</dt><dd class="stack-row">GCP, Firebase, Cloud Functions, Python</dd></div>
+    <div><dt>Based</dt><dd>Philippines, working AU hours</dd></div>
+  </dl>
+</section>
+
+<section class="section" id="work" aria-labelledby="work-title">
+  <header class="section-head">
+    <div class="num">No. 01 — Work</div>
+    <h2 id="work-title">Selected projects, in order of weight.</h2>
+    <p class="deck">Five shipped products, from a national telco super-app to a personal Dota 2 analytics tool. Each is live, each has a real address, each can be poked at.</p>
+  </header>
+
+  <ol class="projects">
+
+    <li class="project flagship">
+      <div class="num">01</div>
+      <div class="body">
+        <h3>E.Tel Mobile</h3>
+        <div class="role">Lead Frontend / Fullstack <span class="pill">Flagship</span> · Cross-platform · 2023–present</div>
+        <p>Australian telco platform covering eSIM, travel SIM and mobile plans. Built customer-facing apply forms, SIM activation flows, and cross-platform account apps for web, Android and iOS, with secure payment gateway integration and full analytics instrumentation.</p>
+        <div class="stack">
+          <span>Vue 3</span><span>TypeScript</span><span>Quasar</span><span>Capacitor</span><span>iOS</span><span>Android</span><span>Pinia</span><span>eWAY</span>
+        </div>
+        <div class="links">
+          <a href="https://apply.etel.com.au/travelesim" target="_blank" rel="noopener">Travel eSIM</a>
+          <a href="https://apply.etel.com.au/buysim/10gb-plan" target="_blank" rel="noopener">Mobile plans</a>
+          <a href="https://apply.etel.com.au/activatesim" target="_blank" rel="noopener">Activate SIM</a>
+          <a href="https://app.etel.com.au/" target="_blank" rel="noopener">Web app</a>
+          <a href="https://apps.apple.com/au/app/etel-mobile-esims-made-easy/id6749548976" target="_blank" rel="noopener">iOS</a>
+          <a href="https://play.google.com/store/apps/details?id=au.com.etel.myaccount" target="_blank" rel="noopener">Android</a>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="images/portfoliov2.jpg" alt="E.Tel Mobile app screens" loading="lazy" />
+        <figcaption class="caption">Fig. 01 — Apply, activate, manage.</figcaption>
+      </figure>
+    </li>
+
+    <li class="project">
+      <div class="num">02</div>
+      <div class="body">
+        <h3>Coffee Mobile</h3>
+        <div class="role">Lead Frontend · Web platform · 2024</div>
+        <p>Mobile plans bundled with rewards from partnered cafés across Australia. Sign-up flow, plan selection, partner-café network with Google Maps integration.</p>
+        <div class="stack">
+          <span>Vue 3</span><span>TypeScript</span><span>Quasar</span><span>Capacitor</span><span>Google Maps</span><span>Analytics</span>
+        </div>
+        <div class="links">
+          <a href="https://app.coffeemobile.au/signup" target="_blank" rel="noopener">Visit site</a>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="images/coffeemobile.png" alt="Coffee Mobile sign-up flow" loading="lazy" />
+        <figcaption class="caption">Fig. 02 — Plans &amp; café partners.</figcaption>
+      </figure>
+    </li>
+
+    <li class="project">
+      <div class="num">03</div>
+      <div class="body">
+        <h3>Proxima</h3>
+        <div class="role">Co-Developer · Web platform · Built with AI</div>
+        <p>A Filipino-first super-app: on-demand home services across 25+ categories paired with a calendar-first personal finance tracker. Family sharing, secure in-app payments. Built heavily with AI-augmented workflows.</p>
+        <div class="stack">
+          <span>Phoenix</span><span>Elixir</span><span>Fintech</span><span>Marketplace</span>
+        </div>
+        <div class="links">
+          <a href="https://proxima.com.ph/" target="_blank" rel="noopener">Visit site</a>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="images/proxima.png" alt="Proxima super-app" loading="lazy" />
+        <figcaption class="caption">Fig. 03 — Services + finance.</figcaption>
+      </figure>
+    </li>
+
+    <li class="project">
+      <div class="num">04</div>
+      <div class="body">
+        <h3>Spondise</h3>
+        <div class="role">Lead Frontend · Web platform</div>
+        <p>Influencer marketplace connecting brands and creators. Led frontend engineering: architecture decisions, code quality, and pixel-precise delivery from design to production.</p>
+        <div class="stack">
+          <span>Nuxt 3</span><span>Vue 3</span><span>TypeScript</span><span>Tailwind</span>
+        </div>
+        <div class="links">
+          <a href="https://www.spondise.com" target="_blank" rel="noopener">Visit site</a>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="images/spondise.png" alt="Spondise marketplace" loading="lazy" />
+        <figcaption class="caption">Fig. 04 — Brands meet creators.</figcaption>
+      </figure>
+    </li>
+
+    <li class="project">
+      <div class="num">05</div>
+      <div class="body">
+        <h3>Dotactics</h3>
+        <div class="role">Personal project · Solo</div>
+        <p>A Dota 2 profile tracker with real-time match analytics and tactical insights, sitting on top of the STRATZ API. A playground for React patterns, query caching and design discipline.</p>
+        <div class="stack">
+          <span>React</span><span>TypeScript</span><span>Redux</span><span>Tailwind</span><span>shadcn/ui</span><span>Vite</span><span>TanStack Query</span>
+        </div>
+        <div class="links">
+          <a href="https://dotactics.netlify.app/" target="_blank" rel="noopener">Visit site</a>
+          <a href="https://github.com/renzivan/reactjs-dota2-profile-tracker" target="_blank" rel="noopener">Source</a>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="images/dotactics.PNG" alt="Dotactics analytics" loading="lazy" />
+        <figcaption class="caption">Fig. 05 — Match analytics.</figcaption>
+      </figure>
+    </li>
+
+  </ol>
+</section>
+
+<section class="section" id="about" aria-labelledby="about-title">
+  <header class="section-head">
+    <div class="num">No. 02 — About</div>
+    <h2 id="about-title">Engineer first, designer-literate, AI-augmented.</h2>
+  </header>
+
+  <div class="about-grid">
+    <aside>
+      <p class="pullquote">
+        Most frontend bugs are design bugs you forgot to ask about. I ask.
+        <span class="small">— Working note, 2024</span>
+      </p>
+    </aside>
+    <div class="about-body">
+      <p>Bachelor's in Computer Science. <b><span class="yoe">8</span> years</b> shipping web frontends in HTML, CSS, JavaScript, Vue, React and TypeScript. Strong fundamentals, current on the work, careful in translating design into production code across web, iOS and Android via Quasar and Capacitor.</p>
+      <p>Deep into <b>AI-augmented development</b>. Claude Code, Codex and Cursor as daily drivers. Custom skills, agents and rules. PaperclipAI for orchestrated multi-model pipelines. MCP-powered workflows used in real shipping work, not as a demo.</p>
+      <p>Comfortable across the stack when the product needs it: Google Cloud Platform (Cloud Functions, Firebase, Cloud Storage, Cloud Scheduler), Python services, payment integrations with eWAY, Stripe and Square, and the full analytics stack (Google Analytics, Microsoft Clarity, Facebook Pixel and CAPI).</p>
+    </div>
+  </div>
+
+  <div class="caps">
+    <dl><dt><span class="idx">i.</span>Frontend</dt>
+      <dd>HTML, CSS, JavaScript</dd>
+      <dd>Vue 3, React, TypeScript</dd>
+      <dd>UI libraries<small>Tailwind, Bootstrap, shadcn/ui, Material-UI</small></dd>
+    </dl>
+    <dl><dt><span class="idx">ii.</span>Cross-platform</dt>
+      <dd>Quasar Framework</dd>
+      <dd>Capacitor (iOS, Android)</dd>
+      <dd>App Store + Play Store releases</dd>
+    </dl>
+    <dl><dt><span class="idx">iii.</span>Backend</dt>
+      <dd>Google Cloud Platform<small>Cloud Functions, Firebase, Storage, Scheduler</small></dd>
+      <dd>Python services &amp; APIs</dd>
+      <dd>Payment gateways<small>eWAY, Stripe, Square</small></dd>
+    </dl>
+    <dl><dt><span class="idx">iv.</span>AI &amp; automation</dt>
+      <dd>Claude Code, Codex, Cursor</dd>
+      <dd>Custom skills, agents, rules, MCPs</dd>
+      <dd>PaperclipAI multi-model pipelines</dd>
+    </dl>
+    <dl><dt><span class="idx">v.</span>Analytics</dt>
+      <dd>Google Analytics, Clarity</dd>
+      <dd>Facebook Pixel &amp; CAPI</dd>
+      <dd>Reddit Pixel, Google Maps</dd>
+    </dl>
+    <dl><dt><span class="idx">vi.</span>Practice</dt>
+      <dd>Git, CI/CD<small>GitHub Actions, Bitbucket Pipelines</small></dd>
+      <dd>Jira, Confluence, Trello, Monday</dd>
+      <dd>Adobe Photoshop, XD, Figma</dd>
+    </dl>
+  </div>
+</section>
+
+<section class="section" id="contact" aria-labelledby="contact-title">
+  <header class="section-head">
+    <div class="num">No. 03 — Contact</div>
+    <h2 id="contact-title">Open a channel.</h2>
+    <p class="deck">Email is fastest. Discord and GitHub work too. Reply within 24 hours on weekdays.</p>
+  </header>
+
+  <div class="contact-card">
+    <a href="mailto:renzivanyapenguio@gmail.com">
+      <div class="label">Email · preferred</div>
+      <div class="channel-name">renzivanyapenguio@gmail.com</div>
+    </a>
+    <a href="cv.pdf" target="_blank" rel="noopener">
+      <div class="label">Curriculum vitæ · PDF</div>
+      <div class="channel-name">Download CV</div>
+    </a>
+    <a href="https://github.com/renzivan" target="_blank" rel="noopener">
+      <div class="label">GitHub</div>
+      <div class="channel-name">github.com/renzivan</div>
+    </a>
+    <a href="https://discordapp.com/users/460646553946816554" target="_blank" rel="noopener">
+      <div class="label">Discord</div>
+      <div class="channel-name">renzy</div>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<footer class="colophon">
+  <div class="left">
+    Set in <b>Fraunces</b> and <b>Inter</b>. Hand-coded, no framework. Hosted on GitHub Pages.<br/>
+    Last edition revised <span id="rev-date"></span>.
+  </div>
+  <div class="right">
+    © <span id="year"></span> Renz Ivan Enguio<br/>
+    Folio · Vol. <span class="yoe-roman">VIII</span>
+  </div>
+</footer>
+
+<nav class="variant-switch" aria-label="Design variants">
+  <span>Variant:</span>
+  <a href="index-editorial.html" class="active">Editorial</a>
+  <a href="index-terminal.html">Terminal</a>
+  <a href="index-bold.html">Bold</a>
+  <a href="index-cosmic.html">Cosmic</a>
+</nav>
+
+<script>
+  // Years of experience — career start: April 2018
+  (function () {
+    const start = new Date(2018, 3, 1);
+    const now = new Date();
+    let y = now.getFullYear() - start.getFullYear();
+    if (now.getMonth() < start.getMonth() || (now.getMonth() === start.getMonth() && now.getDate() < start.getDate())) y--;
+    document.querySelectorAll('.yoe').forEach(el => el.textContent = y);
+    const roman = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV'];
+    document.querySelectorAll('.yoe-roman').forEach(el => el.textContent = roman[y] || y);
+    document.getElementById('now-meta').textContent = 'Vol. ' + (roman[y] || y);
+
+    document.getElementById('year').textContent = now.getFullYear();
+    document.getElementById('year-issue').textContent = now.getFullYear();
+    document.getElementById('rev-date').textContent = now.toLocaleDateString('en-AU', { year: 'numeric', month: 'long' });
+  })();
+</script>
+</body>
+</html>
