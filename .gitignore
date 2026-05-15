@@ -1,0 +1,12 @@
+# Local agent / IDE config
+.claude/
+.cursor/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor backups
+*.swp
+*~
