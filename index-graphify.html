@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Renz Ivan Enguio — Frontend Engineer · Knowledge Graph Portfolio</title>
+<meta name="description" content="Renz Ivan Enguio — Frontend-focused fullstack engineer. Vue, React, TypeScript, Quasar. AI-augmented dev with Claude Code & Codex." />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Bricolage Grotesque', 'Inter', 'system-ui', 'sans-serif'],
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg:      #040806;
+    --bg2:     #060d08;
+    --green:   #22c55e;
+    --green2:  #4ade80;
+    --green3:  #86efac;
+    --amber:   #f59e0b;
+    --amber2:  #fbbf24;
+    --border:  rgba(34,197,94,0.13);
+    --border-2:rgba(34,197,94,0.28);
+    --glass:   rgba(34,197,94,0.04);
+    --t1:      rgba(220,255,220,0.92);
+    --t2:      rgba(220,255,220,0.5);
+    --t3:      rgba(220,255,220,0.24);
+  }
+  *,*::before,*::after { box-sizing: border-box; }
+  html { background: var(--bg); scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--t1);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    font-weight: 300;
+  }
+
+  /* noise */
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity:0.025;
+  }
+  /* scanlines */
+  body::after {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:9998;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);
+  }
+
+  /* green grid */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(34,197,94,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,197,94,.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* node canvas — sits above bg, below content */
+  #node-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* top strip */
+  .top-strip {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #22c55e 35%, #f59e0b 50%, #22c55e 65%, transparent);
+  }
+
+  /* nav */
+  .nav {
+    background: rgba(4,8,6,0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* typography */
+  .hl { font-family: 'Bricolage Grotesque', 'Inter', sans-serif; font-weight: 600; line-height: 0.95; letter-spacing: -0.045em; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .grad-green { background: linear-gradient(135deg, #86efac 0%, #4ade80 40%, #22c55e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .grad-amber { background: linear-gradient(135deg, #fde68a 0%, #f59e0b 60%, #d97706 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--green2);
+  }
+
+  /* glass */
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: border-color .25s, transform .25s, background .25s;
+  }
+  .glass:hover {
+    border-color: var(--border-2);
+    background: rgba(34,197,94,0.06);
+  }
+
+  /* buttons */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .04em;
+    color: #ecfccb;
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    box-shadow: 0 0 24px rgba(34,197,94,0.3), 0 4px 16px rgba(0,0,0,0.5);
+    transition: all .25s ease;
+    cursor: pointer; border: none;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 0 40px rgba(34,197,94,0.45), 0 4px 24px rgba(0,0,0,0.6);
+    transform: translateY(-2px);
+  }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .04em;
+    border: 1px solid rgba(34,197,94,0.22); color: rgba(74,222,128,0.75);
+    background: rgba(34,197,94,0.02);
+    transition: all .25s ease; cursor: pointer;
+  }
+  .btn-ghost:hover {
+    border-color: rgba(34,197,94,0.5);
+    color: rgba(134,239,172,1);
+    background: rgba(34,197,94,0.06);
+    transform: translateY(-2px);
+  }
+
+  /* badge */
+  .badge-live {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 12px; border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .06em;
+    background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25);
+    color: #4ade80;
+  }
+  .badge-amber {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 12px; border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .06em;
+    background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3);
+    color: #fbbf24;
+  }
+  .pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+    animation: dot-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes dot-pulse { 0%,100% { opacity:1; transform: scale(1); } 50% { opacity: .4; transform: scale(.7); } }
+
+  /* chips */
+  .chip {
+    display: inline-block;
+    padding: 3px 10px; border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; letter-spacing: .04em;
+    background: rgba(34,197,94,0.05);
+    border: 1px solid rgba(34,197,94,0.18);
+    color: rgba(134,239,172,.85);
+    margin: 2px 3px 2px 0;
+  }
+
+  /* greek key border */
+  .greek-key {
+    height: 10px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpolyline points='0,4 0,0 12,0 12,8 6,8 6,4 16,4' fill='none' stroke='%2322c55e' stroke-width='1' stroke-opacity='0.28' stroke-linejoin='miter' stroke-linecap='square'/%3E%3C/svg%3E");
+    background-size: 16px 10px; background-repeat: repeat-x; background-position: center;
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 18%, black 82%, transparent);
+    mask-image: linear-gradient(90deg, transparent, black 18%, black 82%, transparent);
+  }
+
+  /* hero orbs */
+  .orb { position:absolute; border-radius:50%; filter:blur(110px); pointer-events:none; }
+
+  /* hero rings */
+  .ring-rot { animation: spin-s 28s linear infinite; }
+  .ring-rot-rev { animation: spin-s 40s linear infinite reverse; }
+  @keyframes spin-s { to { transform: rotate(360deg); } }
+
+  /* hero graph svg animations */
+  @keyframes node-appear { from { opacity:0; transform: scale(.4); } to { opacity:1; transform: scale(1); } }
+  .svg-node { transform-box: fill-box; transform-origin: center; }
+
+  /* code-frame */
+  .code-frame {
+    position: relative;
+    background: rgba(4,10,6,0.85);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+  }
+
+  /* stats strip */
+  .stats-strip {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: rgba(6,13,8,0.6);
+  }
+
+  /* project card */
+  .proj-card {
+    border-radius: 14px;
+    padding: 30px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all .3s ease;
+    position: relative;
+  }
+  .proj-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(34,197,94,0.32);
+    background: rgba(34,197,94,0.055);
+  }
+  .proj-card .node-mark {
+    position: absolute; top: 18px; right: 18px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 10px var(--green);
+  }
+  .proj-card.flagship .node-mark {
+    background: var(--amber2); box-shadow: 0 0 12px var(--amber);
+    width: 10px; height: 10px;
+  }
+
+  /* feature row */
+  .feat-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(34,197,94,0.06);
+  }
+  .feat-row:last-child { border-bottom: none; }
+  .feat-dot { width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; background: var(--green); }
+  .feat-dot-amber { background: var(--amber); }
+
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* scroll progress */
+  .scroll-bar {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: linear-gradient(90deg, #22c55e, #f59e0b);
+    z-index: 1000; width: 0;
+    transition: width 100ms linear;
+  }
+
+  /* link */
+  a.lk {
+    color: rgba(134,239,172,.85);
+    transition: color .2s, text-shadow .2s;
+  }
+  a.lk:hover {
+    color: #86efac;
+    text-shadow: 0 0 12px rgba(74,222,128,.5);
+  }
+
+  /* persona chips */
+  .persona-chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .04em;
+    padding: 6px 12px; border-radius: 4px;
+    background: rgba(34,197,94,0.03);
+    border: 1px solid var(--border);
+    color: var(--t3);
+    cursor: pointer; transition: all .2s;
+  }
+  .persona-chip:hover { color: var(--green2); border-color: rgba(34,197,94,0.35); }
+  .pc-active { color: #4ade80!important; background: rgba(34,197,94,0.12)!important; border-color: rgba(34,197,94,0.45)!important; box-shadow: 0 0 12px rgba(34,197,94,0.15); }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: rgba(34,197,94,0.3); border-radius: 3px; }
+
+  /* focus */
+  a:focus-visible, button:focus-visible { outline: 1px solid var(--green2); outline-offset: 3px; border-radius: 4px; }
+
+  /* selection */
+  ::selection { background: rgba(34,197,94,.3); color: #ecfccb; }
+
+  /* content stays above node canvas */
+  .above { position: relative; z-index: 2; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ring-rot, .ring-rot-rev, .pulse-dot, .reveal { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- scroll progress -->
+<div id="scroll-bar" class="scroll-bar"></div>
+
+<!-- top strip -->
+<div class="top-strip above"></div>
+
+<!-- node canvas (click effect) -->
+<canvas id="node-canvas"></canvas>
+
+<!-- nav -->
+<header class="nav fixed top-0 left-0 right-0 z-50 above">
+  <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+    <a href="#home" class="flex items-center gap-2.5 mono text-sm">
+      <span class="w-2 h-2 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]"></span>
+      <span class="text-white tracking-wider">renz.ivan</span>
+      <span class="text-[10px] text-[var(--t3)]">v8.0</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-1 mono text-[12px]">
+      <a href="#work" class="px-3 py-1.5 rounded text-[var(--t2)] hover:text-[var(--green2)] transition">// work</a>
+      <a href="#stack" class="px-3 py-1.5 rounded text-[var(--t2)] hover:text-[var(--green2)] transition">// stack</a>
+      <a href="#about" class="px-3 py-1.5 rounded text-[var(--t2)] hover:text-[var(--green2)] transition">// about</a>
+      <a href="#contact" class="px-3 py-1.5 rounded text-[var(--t2)] hover:text-[var(--green2)] transition">// contact</a>
+    </nav>
+    <a href="cv.pdf" target="_blank" rel="noopener" class="btn-ghost text-[11px] py-1.5 px-3">
+      <span>cv.pdf</span>
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="home" class="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden grid-bg above">
+
+  <!-- orbs -->
+  <div class="orb" style="top:-10%; left:-10%; width:42vw; height:42vw; background: radial-gradient(circle, #22c55e 0%, transparent 70%); opacity:.18;"></div>
+  <div class="orb" style="bottom:-15%; right:-10%; width:38vw; height:38vw; background: radial-gradient(circle, #f59e0b 0%, transparent 70%); opacity:.12;"></div>
+
+  <div class="max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-12 items-center">
+
+    <!-- left: text -->
+    <div class="reveal">
+      <div class="flex flex-wrap gap-2 mb-6">
+        <span class="badge-live"><span class="pulse-dot"></span>available.for.work</span>
+        <span class="badge-amber">// frontend.fullstack</span>
+      </div>
+
+      <h1 class="hl text-[42px] sm:text-[58px] md:text-[72px] text-white mb-5">
+        Crafting code<br>
+        like a <span class="grad-green">ranked</span> <span class="grad-amber">match</span>
+      </h1>
+
+      <p class="text-[15px] md:text-base font-light leading-relaxed mb-6" style="color:var(--t2); max-width: 580px;">
+        I'm <span class="text-white font-medium">Renz Ivan Enguio</span> — frontend-focused fullstack engineer.
+        <span class="yoe-plus text-[#86efac] mono">8+</span> years shipping pixel-perfect frontends in Vue, React, TypeScript.
+        Cross-platform via Quasar + Capacitor. AI-augmented dev with Claude Code, Codex, Cursor.
+      </p>
+
+      <!-- persona switcher -->
+      <div class="flex flex-wrap gap-2 mb-8">
+        <button class="persona-chip pc-active" data-persona="dev">[ frontend_engineer ]</button>
+        <button class="persona-chip" data-persona="cross">[ cross_platform ]</button>
+        <button class="persona-chip" data-persona="ai">[ ai_augmented ]</button>
+      </div>
+
+      <div id="persona-out" class="mono text-[12px] mb-8" style="color: var(--t2); min-height: 42px;">
+        <span style="color:var(--green2);">&gt; </span><span id="persona-line">Vue 3 · React · TypeScript · pixel-perfect, design-system fluent.</span>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <a href="#work" class="btn-primary">
+          [ view_portfolio ]
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a href="cv.pdf" target="_blank" rel="noopener" class="btn-ghost">
+          [ open_cv ]
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 3h7v7M21 3l-9 9M5 5h6M5 12h6M5 19h14v-7"/></svg>
+        </a>
+        <a href="https://github.com/renzivan" target="_blank" rel="noopener" class="btn-ghost">
+          [ github ]
+        </a>
+      </div>
+    </div>
+
+    <!-- right: graph svg -->
+    <div class="reveal flex justify-center">
+      <div style="width:100%; max-width:520px; position: relative;">
+        <div class="absolute inset-0 rounded-full ring-rot" style="border:1px solid rgba(34,197,94,.1);"></div>
+        <div class="absolute ring-rot-rev" style="inset:10%; border-radius:50%; border:1px dashed rgba(245,158,11,.1);"></div>
+
+        <svg viewBox="0 0 540 490" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; position:relative;">
+          <!-- edges -->
+          <g stroke="rgba(34,197,94,0.35)" stroke-width="1">
+            <line x1="270" y1="245" x2="118" y2="110" stroke-dasharray="3 3"><animate attributeName="stroke-opacity" values="0;1" dur=".7s" begin=".2s" fill="freeze"/></line>
+            <line x1="270" y1="245" x2="55" y2="228" stroke-dasharray="3 3"><animate attributeName="stroke-opacity" values="0;1" dur=".7s" begin=".25s" fill="freeze"/></line>
+            <line x1="270" y1="245" x2="136" y2="314" stroke-dasharray="3 3"><animate attributeName="stroke-opacity" values="0;1" dur=".7s" begin=".3s" fill="freeze"/></line>
+            <line x1="270" y1="245" x2="392" y2="98"  stroke-dasharray="3 3"><animate attributeName="stroke-opacity" values="0;1" dur=".7s" begin=".35s" fill="freeze"/></line>
+            <line x1="270" y1="245" x2="468" y2="206" stroke-dasharray="3 3"><animate attributeName="stroke-opacity" values="0;1" dur=".7s" begin=".4s" fill="freeze"/></line>
+            <line x1="270" y1="245" x2="385" y2="324" stroke-dasharray="3 3"><animate attributeName="stroke-opacity" values="0;1" dur=".7s" begin=".45s" fill="freeze"/></line>
+            <line x1="270" y1="245" x2="204" y2="400" stroke="rgba(245,158,11,.45)" stroke-dasharray="3 3"><animate attributeName="stroke-opacity" values="0;1" dur=".7s" begin=".5s" fill="freeze"/></line>
+            <line x1="270" y1="245" x2="328" y2="400" stroke="rgba(245,158,11,.45)" stroke-dasharray="3 3"><animate attributeName="stroke-opacity" values="0;1" dur=".7s" begin=".55s" fill="freeze"/></line>
+            <line x1="118" y1="110" x2="55" y2="144"  stroke-opacity=".4"><animate attributeName="stroke-opacity" values="0;.4" dur=".5s" begin="1.4s" fill="freeze"/></line>
+            <line x1="392" y1="98"  x2="478" y2="144" stroke-opacity=".4"><animate attributeName="stroke-opacity" values="0;.4" dur=".5s" begin="1.4s" fill="freeze"/></line>
+          </g>
+
+          <!-- hub -->
+          <circle cx="270" cy="245" r="28" fill="rgba(34,197,94,.08)" stroke="rgba(34,197,94,.5)" stroke-width="1.5">
+            <animate attributeName="r" values="26;32;26" dur="3.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="270" cy="245" r="10" fill="#22c55e" opacity="0">
+            <animate attributeName="opacity" values="0;1" dur=".5s" begin=".8s" fill="freeze"/>
+            <animate attributeName="r" values="9;11;9" dur="2.5s" repeatCount="indefinite" begin="1.3s"/>
+          </circle>
+          <text x="270" y="248" font-family="JetBrains Mono,monospace" font-size="7" fill="#040806" font-weight="600" text-anchor="middle" opacity="0">
+            R
+            <animate attributeName="opacity" values="0;1" dur=".4s" begin="1.2s" fill="freeze"/>
+          </text>
+          <text x="270" y="285" font-family="JetBrains Mono,monospace" font-size="8" fill="#fbbf24" text-anchor="middle" letter-spacing="1.5" opacity="0">
+            RENZ.NODES
+            <animate attributeName="opacity" values="0;1" dur=".5s" begin="1.4s" fill="freeze"/>
+          </text>
+
+          <!-- nodes -->
+          <g class="svg-node" style="opacity:0; animation: node-appear .45s ease .85s forwards;">
+            <circle cx="118" cy="110" r="14" fill="rgba(34,197,94,.1)" stroke="rgba(74,222,128,.6)" stroke-width="1"/>
+            <circle cx="118" cy="110" r="5" fill="#4ade80"/>
+          </g>
+          <text x="118" y="93" font-family="JetBrains Mono,monospace" font-size="9" fill="#4ade80" text-anchor="middle" opacity="0">
+            vue.app
+            <animate attributeName="opacity" values="0;1" dur=".5s" begin="1.3s" fill="freeze"/>
+          </text>
+
+          <g class="svg-node" style="opacity:0; animation: node-appear .45s ease 1s forwards;">
+            <circle cx="55" cy="228" r="14" fill="rgba(34,197,94,.1)" stroke="rgba(74,222,128,.6)" stroke-width="1"/>
+            <circle cx="55" cy="228" r="5" fill="#4ade80"/>
+          </g>
+          <text x="55" y="212" font-family="JetBrains Mono,monospace" font-size="9" fill="#4ade80" text-anchor="middle" opacity="0">
+            quasar.ts
+            <animate attributeName="opacity" values="0;1" dur=".5s" begin="1.45s" fill="freeze"/>
+          </text>
+
+          <g class="svg-node" style="opacity:0; animation: node-appear .45s ease 1.15s forwards;">
+            <circle cx="136" cy="314" r="14" fill="rgba(34,197,94,.1)" stroke="rgba(74,222,128,.6)" stroke-width="1"/>
+            <circle cx="136" cy="314" r="5" fill="#4ade80"/>
+          </g>
+          <text x="136" y="338" font-family="JetBrains Mono,monospace" font-size="9" fill="#4ade80" text-anchor="middle" opacity="0">
+            capacitor
+            <animate attributeName="opacity" values="0;1" dur=".5s" begin="1.6s" fill="freeze"/>
+          </text>
+
+          <g class="svg-node" style="opacity:0; animation: node-appear .45s ease .9s forwards;">
+            <circle cx="392" cy="98" r="14" fill="rgba(34,197,94,.1)" stroke="rgba(74,222,128,.6)" stroke-width="1"/>
+            <circle cx="392" cy="98" r="5" fill="#4ade80"/>
+          </g>
+          <text x="392" y="82" font-family="JetBrains Mono,monospace" font-size="9" fill="#4ade80" text-anchor="middle" opacity="0">
+            react.tsx
+            <animate attributeName="opacity" values="0;1" dur=".5s" begin="1.35s" fill="freeze"/>
+          </text>
+
+          <g class="svg-node" style="opacity:0; animation: node-appear .45s ease 1.05s forwards;">
+            <circle cx="468" cy="206" r="14" fill="rgba(34,197,94,.1)" stroke="rgba(74,222,128,.6)" stroke-width="1"/>
+            <circle cx="468" cy="206" r="5" fill="#4ade80"/>
+          </g>
+          <text x="468" y="190" font-family="JetBrains Mono,monospace" font-size="9" fill="#4ade80" text-anchor="middle" opacity="0">
+            gcp.fn
+            <animate attributeName="opacity" values="0;1" dur=".5s" begin="1.5s" fill="freeze"/>
+          </text>
+
+          <g class="svg-node" style="opacity:0; animation: node-appear .45s ease 1.2s forwards;">
+            <circle cx="385" cy="324" r="14" fill="rgba(34,197,94,.1)" stroke="rgba(74,222,128,.6)" stroke-width="1"/>
+            <circle cx="385" cy="324" r="5" fill="#4ade80"/>
+          </g>
+          <text x="385" y="348" font-family="JetBrains Mono,monospace" font-size="9" fill="#4ade80" text-anchor="middle" opacity="0">
+            stripe.api
+            <animate attributeName="opacity" values="0;1" dur=".5s" begin="1.65s" fill="freeze"/>
+          </text>
+
+          <!-- amber: AI nodes -->
+          <g class="svg-node" style="opacity:0; animation: node-appear .45s ease 1.45s forwards;">
+            <circle cx="204" cy="400" r="14" fill="rgba(245,158,11,.1)" stroke="rgba(251,191,36,.7)" stroke-width="1"/>
+            <circle cx="204" cy="400" r="5" fill="#fbbf24"/>
+          </g>
+          <text x="204" y="424" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24" text-anchor="middle" opacity="0">
+            claude.code
+            <animate attributeName="opacity" values="0;1" dur=".5s" begin="1.9s" fill="freeze"/>
+          </text>
+
+          <g class="svg-node" style="opacity:0; animation: node-appear .45s ease 1.55s forwards;">
+            <circle cx="328" cy="400" r="14" fill="rgba(245,158,11,.1)" stroke="rgba(251,191,36,.7)" stroke-width="1"/>
+            <circle cx="328" cy="400" r="5" fill="#fbbf24"/>
+          </g>
+          <text x="328" y="424" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24" text-anchor="middle" opacity="0">
+            codex
+            <animate attributeName="opacity" values="0;1" dur=".5s" begin="2s" fill="freeze"/>
+          </text>
+
+          <!-- small satellites -->
+          <g class="svg-node" style="opacity:0; animation: node-appear .45s ease 1.7s forwards;">
+            <circle cx="55" cy="144" r="6" fill="rgba(34,197,94,.15)" stroke="rgba(74,222,128,.4)" stroke-width="1"/>
+          </g>
+          <g class="svg-node" style="opacity:0; animation: node-appear .45s ease 1.75s forwards;">
+            <circle cx="478" cy="144" r="6" fill="rgba(34,197,94,.15)" stroke="rgba(74,222,128,.4)" stroke-width="1"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- stats strip -->
+<section class="stats-strip above py-5">
+  <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+    <div>
+      <div class="mono text-2xl text-white"><span class="yoe">8</span><span class="text-[#fbbf24]">+</span></div>
+      <div class="mono text-[10px] uppercase tracking-widest text-[var(--t3)] mt-1">years.exp</div>
+    </div>
+    <div>
+      <div class="mono text-2xl text-white">FE<span class="text-[#fbbf24]">·</span>BE</div>
+      <div class="mono text-[10px] uppercase tracking-widest text-[var(--t3)] mt-1">fullstack.engineer</div>
+    </div>
+    <div>
+      <div class="mono text-2xl text-white">web<span class="text-[#fbbf24]">·</span>ios<span class="text-[#fbbf24]">·</span>android</div>
+      <div class="mono text-[10px] uppercase tracking-widest text-[var(--t3)] mt-1">platforms</div>
+    </div>
+    <div>
+      <div class="mono text-2xl text-white"><span class="grad-amber">∞</span></div>
+      <div class="mono text-[10px] uppercase tracking-widest text-[var(--t3)] mt-1">ai.augmented</div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work" class="above py-20 border-t" style="border-color: var(--border);">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-14 reveal">
+      <p class="section-tag mb-3">// constellation.of_work</p>
+      <h2 class="hl text-4xl md:text-5xl text-white mb-4">Nodes you can <span class="grad-green">visit</span>.</h2>
+      <p class="text-sm font-light max-w-xl mx-auto" style="color: var(--t2);">Telco platforms, fintech super-apps, Dota analytics, crafted frontends. Each one a live edge in the graph.</p>
+      <div class="greek-key mt-6"></div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-5">
+
+      <!-- flagship -->
+      <article class="proj-card flagship md:col-span-2 reveal">
+        <div class="node-mark"></div>
+        <div class="flex flex-wrap items-center gap-2 mb-3">
+          <span class="mono text-[10px] uppercase tracking-widest" style="color: var(--t3);">// cross_platform · lead.frontend</span>
+          <span class="badge-amber">flagship</span>
+        </div>
+        <h3 class="hl text-3xl md:text-4xl text-white mb-3">E.Tel Mobile</h3>
+        <p class="text-sm font-light leading-relaxed mb-5" style="color: var(--t2); max-width: 780px;">
+          Australian telco — eSIM, travel SIM, mobile plans. Built customer-facing apply forms, SIM activation flows, and cross-platform account management apps (web · Android · iOS) with secure payment gateway integration.
+        </p>
+        <div class="mb-5">
+          <span class="chip">vue3</span><span class="chip">typescript</span><span class="chip">quasar</span><span class="chip">capacitor</span><span class="chip">ios</span><span class="chip">android</span><span class="chip">analytics</span>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="glass rounded-xl p-5">
+            <div class="mono text-[10px] uppercase tracking-widest mb-3" style="color: var(--green2);">// apply.forms</div>
+            <ul class="space-y-2 text-sm font-light">
+              <li><a href="https://apply.etel.com.au/travelesim" target="_blank" rel="noopener" class="lk">→ travel eSIM</a></li>
+              <li><a href="https://apply.etel.com.au/buysim/10gb-plan" target="_blank" rel="noopener" class="lk">→ mobile plans</a></li>
+              <li><a href="https://apply.etel.com.au/activatesim" target="_blank" rel="noopener" class="lk">→ activate SIM</a></li>
+            </ul>
+          </div>
+          <div class="glass rounded-xl p-5">
+            <div class="mono text-[10px] uppercase tracking-widest mb-3" style="color: var(--green2);">// my_account.app</div>
+            <ul class="space-y-2 text-sm font-light">
+              <li><a href="https://app.etel.com.au/" target="_blank" rel="noopener" class="lk">→ web app</a></li>
+              <li><a href="https://play.google.com/store/apps/details?id=au.com.etel.myaccount" target="_blank" rel="noopener" class="lk">→ android · play store</a></li>
+              <li><a href="https://apps.apple.com/au/app/etel-mobile-esims-made-easy/id6749548976" target="_blank" rel="noopener" class="lk">→ ios · app store</a></li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="proj-card reveal">
+        <div class="node-mark"></div>
+        <div class="mono text-[10px] uppercase tracking-widest mb-2" style="color: var(--t3);">// web_platform · lead.frontend</div>
+        <h3 class="hl text-2xl text-white mb-3">Coffee Mobile</h3>
+        <p class="text-sm font-light leading-relaxed mb-4" style="color: var(--t2);">Mobile plans bundled with rewards from partnered cafes across Australia. Signup flow, plan selection, partner-cafe network.</p>
+        <div class="mb-5">
+          <span class="chip">vue3</span><span class="chip">typescript</span><span class="chip">quasar</span><span class="chip">capacitor</span><span class="chip">maps</span>
+        </div>
+        <a href="https://app.coffeemobile.au/signup" target="_blank" rel="noopener" class="btn-primary text-[11px]">[ visit_site ]</a>
+      </article>
+
+      <article class="proj-card reveal">
+        <div class="node-mark"></div>
+        <div class="mono text-[10px] uppercase tracking-widest mb-2" style="color: var(--t3);">// web_platform · co.developer</div>
+        <h3 class="hl text-2xl text-white mb-3">Proxima</h3>
+        <p class="text-sm font-light leading-relaxed mb-4" style="color: var(--t2);">Filipino-first super-app — on-demand home services marketplace (25+ categories) paired with a calendar-first personal finance tracker. Family sharing, secure in-app payments.</p>
+        <div class="mb-5">
+          <span class="chip">phoenix</span><span class="chip">elixir</span><span class="chip">fintech</span><span class="chip" style="background: rgba(245,158,11,.1); border-color: rgba(245,158,11,.3); color: #fbbf24;">built_with_ai</span>
+        </div>
+        <a href="https://proxima.com.ph/" target="_blank" rel="noopener" class="btn-primary text-[11px]">[ visit_site ]</a>
+      </article>
+
+      <article class="proj-card reveal">
+        <div class="node-mark"></div>
+        <div class="mono text-[10px] uppercase tracking-widest mb-2" style="color: var(--t3);">// web_platform · lead.frontend</div>
+        <h3 class="hl text-2xl text-white mb-3">Spondise</h3>
+        <p class="text-sm font-light leading-relaxed mb-4" style="color: var(--t2);">Influencer marketplace connecting brands and creators. Led frontend engineering — architecture, code quality, pixel-perfect delivery.</p>
+        <div class="mb-5">
+          <span class="chip">nuxt3</span><span class="chip">vue3</span><span class="chip">typescript</span><span class="chip">tailwind</span>
+        </div>
+        <a href="https://www.spondise.com" target="_blank" rel="noopener" class="btn-primary text-[11px]">[ visit_site ]</a>
+      </article>
+
+      <article class="proj-card reveal">
+        <div class="node-mark"></div>
+        <div class="mono text-[10px] uppercase tracking-widest mb-2" style="color: var(--t3);">// personal.project</div>
+        <h3 class="hl text-2xl text-white mb-3">Dotactics</h3>
+        <p class="text-sm font-light leading-relaxed mb-4" style="color: var(--t2);">Dota 2 profile tracker with real-time match analytics and tactical insights. STRATZ API integration.</p>
+        <div class="mb-5">
+          <span class="chip">react</span><span class="chip">typescript</span><span class="chip">redux</span><span class="chip">tailwind</span><span class="chip">shadcn</span><span class="chip">vite</span><span class="chip">tanstack</span>
+        </div>
+        <div class="flex gap-3">
+          <a href="https://dotactics.netlify.app/" target="_blank" rel="noopener" class="btn-primary text-[11px]">[ visit_site ]</a>
+          <a href="https://github.com/renzivan/reactjs-dota2-profile-tracker" target="_blank" rel="noopener" class="btn-ghost text-[11px]">[ source ]</a>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- STACK -->
+<section id="stack" class="above py-20 border-t grid-bg" style="border-color: var(--border);">
+  <div class="max-w-7xl mx-auto px-6">
+
+    <div class="text-center mb-12 reveal">
+      <p class="section-tag mb-3">// stack.traversal</p>
+      <h2 class="hl text-4xl md:text-5xl text-white mb-3">The graph I <span class="grad-green">traverse</span> daily.</h2>
+      <p class="text-sm font-light" style="color: var(--t2);">Every tool, an edge. Every domain, a cluster.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-5">
+
+      <div class="glass rounded-xl p-6 reveal">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-md flex items-center justify-center" style="background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.25);">
+            <svg class="w-4 h-4 text-[#4ade80]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+          </div>
+          <div>
+            <div class="hl text-lg text-white">frontend</div>
+            <div class="mono text-[10px]" style="color: var(--t3);">// cluster.primary</div>
+          </div>
+        </div>
+        <div class="feat-row"><div class="feat-dot"></div><div><div class="text-sm">HTML · CSS · JavaScript</div></div></div>
+        <div class="feat-row"><div class="feat-dot"></div><div><div class="text-sm">Vue.js · React.js · TypeScript</div></div></div>
+        <div class="feat-row"><div class="feat-dot"></div><div><div class="text-sm">UI Libraries</div><div class="mono text-[10px] mt-0.5" style="color: var(--t3);">tailwind · bootstrap · shadcn/ui · mui</div></div></div>
+        <div class="feat-row"><div class="feat-dot"></div><div><div class="text-sm">Cross-platform</div><div class="mono text-[10px] mt-0.5" style="color: var(--t3);">quasar · capacitor · ios · android</div></div></div>
+      </div>
+
+      <div class="glass rounded-xl p-6 reveal">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-md flex items-center justify-center" style="background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.25);">
+            <svg class="w-4 h-4 text-[#4ade80]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+          </div>
+          <div>
+            <div class="hl text-lg text-white">backend</div>
+            <div class="mono text-[10px]" style="color: var(--t3);">// cluster.secondary</div>
+          </div>
+        </div>
+        <div class="feat-row"><div class="feat-dot"></div><div><div class="text-sm">Google Cloud Platform</div><div class="mono text-[10px] mt-0.5" style="color: var(--t3);">cloud functions · firebase · storage · scheduler</div></div></div>
+        <div class="feat-row"><div class="feat-dot"></div><div><div class="text-sm">Python · REST APIs</div></div></div>
+        <div class="feat-row"><div class="feat-dot"></div><div><div class="text-sm">Payment gateways</div><div class="mono text-[10px] mt-0.5" style="color: var(--t3);">eWAY · stripe · square</div></div></div>
+        <div class="feat-row"><div class="feat-dot"></div><div><div class="text-sm">Analytics & tracking</div><div class="mono text-[10px] mt-0.5" style="color: var(--t3);">GA · clarity · meta CAPI · reddit pixel</div></div></div>
+      </div>
+
+      <div class="glass rounded-xl p-6 reveal" style="border-color: rgba(245,158,11,.25);">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-md flex items-center justify-center" style="background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3);">
+            <svg class="w-4 h-4 text-[#fbbf24]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div class="hl text-lg text-white">AI · orchestration</div>
+            <div class="mono text-[10px]" style="color: #fbbf24;">// cluster.amber</div>
+          </div>
+        </div>
+        <div class="feat-row"><div class="feat-dot feat-dot-amber"></div><div><div class="text-sm">AI-assisted dev</div><div class="mono text-[10px] mt-0.5" style="color: var(--t3);">claude code · codex · cursor</div></div></div>
+        <div class="feat-row"><div class="feat-dot feat-dot-amber"></div><div><div class="text-sm">Custom skills · agents · MCP</div></div></div>
+        <div class="feat-row"><div class="feat-dot feat-dot-amber"></div><div><div class="text-sm">PaperclipAI</div><div class="mono text-[10px] mt-0.5" style="color: var(--t3);">multi-model orchestration</div></div></div>
+        <div class="feat-row"><div class="feat-dot feat-dot-amber"></div><div><div class="text-sm">DevOps · CI/CD</div><div class="mono text-[10px] mt-0.5" style="color: var(--t3);">github actions · bitbucket pipelines</div></div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="above py-20 border-t" style="border-color: var(--border);">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="reveal text-center mb-10">
+      <p class="section-tag mb-3">// about.node</p>
+      <h2 class="hl text-4xl md:text-5xl text-white">The <span class="grad-amber">root</span> node.</h2>
+    </div>
+
+    <div class="code-frame p-8 md:p-10 reveal">
+      <div class="flex items-center gap-2 mb-6 pb-4 border-b" style="border-color: var(--border);">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#ef4444] opacity-70"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b] opacity-70"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-[#22c55e] opacity-70"></span>
+        <span class="mono text-[11px] ml-3" style="color: var(--t3);">~ /renz/about.md</span>
+      </div>
+
+      <div class="mono text-[13px] leading-relaxed space-y-3" style="color: var(--t2);">
+        <p><span style="color: #fbbf24;">$</span> <span style="color: var(--green2);">cat</span> renz.profile.json</p>
+        <pre class="text-[12px]" style="color: var(--t2);">{
+  "name":     "Renz Ivan Enguio",
+  "role":     "Frontend-focused Fullstack Engineer",
+  "edu":      "BS Computer Science",
+  "years":    <span class="yoe" style="color:#fbbf24;">8</span>,
+  "core":     ["Vue", "React", "TypeScript", "Quasar"],
+  "platform": ["web", "iOS", "android"],
+  "stack":    ["GCP", "Firebase", "Python", "Stripe", "eWAY"],
+  "ai":       ["Claude Code", "Codex", "Cursor", "MCP", "PaperclipAI"],
+  "design":   ["Figma", "Adobe XD", "Photoshop"],
+  "pm":       ["Jira", "Confluence", "Trello", "Monday"]
+}</pre>
+        <p class="pt-3"><span style="color: #fbbf24;">$</span> <span style="color: var(--green2);">echo</span> "I turn pixel-perfect designs into code across web, iOS, and Android. Meticulous on the frontend; comfortable across the stack when the product needs it. Deep into AI-augmented dev — custom skills, agents, multi-model pipelines."</p>
+        <p><span style="color: #fbbf24;">$</span> <span style="color: var(--green2);">_</span><span class="inline-block w-2 h-3.5 bg-[#4ade80] ml-0.5 align-middle" style="animation: dot-pulse 1s steps(2) infinite;"></span></p>
+      </div>
+
+      <div class="mt-7 pt-6 border-t flex flex-wrap gap-3" style="border-color: var(--border);">
+        <a href="cv.pdf" target="_blank" rel="noopener" class="btn-primary text-[11px]">
+          [ open_cv ]
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 3h7v7M21 3l-9 9M5 5h6M5 12h6M5 19h14v-7"/></svg>
+        </a>
+        <a href="cv.html" class="btn-ghost text-[11px]">[ web_cv ]</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="above py-20 border-t" style="border-color: var(--border);">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="text-center mb-12 reveal">
+      <p class="section-tag mb-3">// transmission.channel</p>
+      <h2 class="hl text-4xl md:text-5xl text-white">Send a <span class="grad-green">signal</span>.</h2>
+      <p class="text-sm font-light max-w-xl mx-auto mt-4" style="color: var(--t2);">Available for work. Drop a node — questions, projects, or a hello.</p>
+      <div class="greek-key mt-6"></div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+
+      <a href="mailto:renzivanyapenguio@gmail.com" class="glass rounded-xl p-5 flex items-center gap-4 reveal group">
+        <div class="w-11 h-11 rounded-lg flex items-center justify-center shrink-0" style="background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.25);">
+          <svg class="w-5 h-5 text-[#4ade80]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="mono text-[10px] uppercase tracking-widest" style="color: var(--t3);">// email</div>
+          <div class="font-light text-sm truncate text-white group-hover:text-[#86efac] transition-colors">renzivanyapenguio@gmail.com</div>
+        </div>
+        <svg class="w-3.5 h-3.5 text-[var(--t3)] group-hover:text-[#4ade80] transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+
+      <a href="https://discordapp.com/users/460646553946816554" target="_blank" rel="noopener" class="glass rounded-xl p-5 flex items-center gap-4 reveal group">
+        <div class="w-11 h-11 rounded-lg flex items-center justify-center shrink-0" style="background: rgba(88,101,242,.12); border: 1px solid rgba(88,101,242,.3);">
+          <svg class="w-5 h-5 text-[#a5b4fc]" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.74 19.74 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.331c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.974 0c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="mono text-[10px] uppercase tracking-widest" style="color: var(--t3);">// discord</div>
+          <div class="font-light text-sm truncate text-white group-hover:text-[#86efac] transition-colors">renzy</div>
+        </div>
+        <svg class="w-3.5 h-3.5 text-[var(--t3)] group-hover:text-[#4ade80] transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+
+      <a href="https://github.com/renzivan" target="_blank" rel="noopener" class="glass rounded-xl p-5 flex items-center gap-4 reveal group">
+        <div class="w-11 h-11 rounded-lg flex items-center justify-center shrink-0" style="background: rgba(220,255,220,.05); border: 1px solid rgba(220,255,220,.15);">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.17c-3.34.73-4.04-1.41-4.04-1.41-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.4 11.4 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="mono text-[10px] uppercase tracking-widest" style="color: var(--t3);">// github</div>
+          <div class="font-light text-sm truncate text-white group-hover:text-[#86efac] transition-colors">github.com/renzivan</div>
+        </div>
+        <svg class="w-3.5 h-3.5 text-[var(--t3)] group-hover:text-[#4ade80] transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+
+      <a href="cv.pdf" target="_blank" rel="noopener" class="glass rounded-xl p-5 flex items-center gap-4 reveal group" style="border-color: rgba(245,158,11,.25);">
+        <div class="w-11 h-11 rounded-lg flex items-center justify-center shrink-0" style="background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3);">
+          <svg class="w-5 h-5 text-[#fbbf24]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 3h7v7M21 3l-9 9M5 5h6M5 12h6M5 19h14v-7"/></svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="mono text-[10px] uppercase tracking-widest" style="color: #fbbf24;">// cv.pdf</div>
+          <div class="font-light text-sm truncate text-white group-hover:text-[#fde68a] transition-colors">view portfolio · résumé</div>
+        </div>
+        <svg class="w-3.5 h-3.5 text-[var(--t3)] group-hover:text-[#fbbf24] transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="above relative px-6 py-10 text-center border-t" style="border-color: var(--border);">
+  <div class="flex items-center justify-center gap-3 mb-3">
+    <span class="w-1.5 h-1.5 rounded-full bg-[#22c55e]"></span>
+    <span class="mono text-[11px] tracking-widest uppercase text-white">renz.ivan.enguio</span>
+    <span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span>
+  </div>
+  <div class="mono text-[10px]" style="color: var(--t3);">&copy; <span id="year"></span> · frontend.engineer // crafted.in.ph</div>
+</footer>
+
+<script>
+  // YEAR
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // YOE — career start: April 2018
+  (function() {
+    const start = new Date(2018, 3, 1);
+    const now = new Date();
+    let y = now.getFullYear() - start.getFullYear();
+    if (now.getMonth() < start.getMonth() || (now.getMonth() === start.getMonth() && now.getDate() < start.getDate())) y--;
+    document.querySelectorAll('.yoe').forEach(el => el.textContent = y);
+    document.querySelectorAll('.yoe-plus').forEach(el => el.textContent = y + '+');
+  })();
+
+  // SCROLL PROGRESS
+  const scrollBar = document.getElementById('scroll-bar');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    scrollBar.style.width = pct + '%';
+  });
+
+  // REVEAL ON SCROLL
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // PERSONA SWITCHER
+  const personas = {
+    dev:   'Vue 3 · React · TypeScript · pixel-perfect, design-system fluent.',
+    cross: 'Quasar + Capacitor · one codebase → web, iOS, Android.',
+    ai:    'Claude Code · Codex · Cursor · multi-model orchestration via PaperclipAI.',
+  };
+  document.querySelectorAll('.persona-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.persona-chip').forEach(b => b.classList.remove('pc-active'));
+      btn.classList.add('pc-active');
+      const out = document.getElementById('persona-line');
+      out.style.opacity = 0;
+      setTimeout(() => {
+        out.textContent = personas[btn.dataset.persona];
+        out.style.transition = 'opacity .35s';
+        out.style.opacity = 1;
+      }, 120);
+    });
+  });
+
+  // ============================================
+  // NODE CLICK EFFECT — every click spawns a node
+  // ============================================
+  (function() {
+    const canvas = document.getElementById('node-canvas');
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+
+    function resize() {
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const nodes = [];       // { x, y, vx, vy, born, life, r, color, label, id }
+    const edges = [];       // { a, b, born, life }
+    let nodeId = 0;
+    const MAX_NODES = 60;
+    const LIFE = 500;       // ms
+    const EDGE_DIST = 220;  // px — connect nearby nodes
+
+    // viewport-relative coords; positions track scroll naturally since canvas is fixed
+    function spawn(x, y, isPrimary) {
+      const isAmber = Math.random() < 0.18;
+      const node = {
+        x, y,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: (Math.random() - 0.5) * 0.18,
+        born: performance.now(),
+        life: LIFE,
+        r: isPrimary ? 6 : (3 + Math.random() * 3),
+        color: isAmber ? '#fbbf24' : '#4ade80',
+        coreColor: isAmber ? 'rgba(245,158,11,.18)' : 'rgba(34,197,94,.18)',
+        ringColor: isAmber ? 'rgba(251,191,36,.55)' : 'rgba(74,222,128,.55)',
+        id: ++nodeId,
+        pulse: 0,
+      };
+      nodes.push(node);
+
+      // connect to nearby existing nodes
+      for (let i = nodes.length - 2; i >= 0 && i > nodes.length - 14; i--) {
+        const o = nodes[i];
+        const dx = o.x - node.x, dy = o.y - node.y;
+        const d = Math.hypot(dx, dy);
+        if (d < EDGE_DIST && d > 1) {
+          edges.push({ a: node.id, b: o.id, born: performance.now(), life: LIFE, progress: 0 });
+        }
+      }
+
+      // cap
+      while (nodes.length > MAX_NODES) nodes.shift();
+    }
+
+    function findNode(id) { return nodes.find(n => n.id === id); }
+
+    // click handler — but ignore clicks on interactive elements? we keep it global
+    document.addEventListener('click', (e) => {
+      // also spawn a small burst of satellites
+      const x = e.clientX, y = e.clientY;
+      spawn(x, y, true);
+      // 2-3 small satellites
+      const n = 2 + Math.floor(Math.random() * 2);
+      for (let i = 0; i < n; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const dist = 40 + Math.random() * 60;
+        setTimeout(() => spawn(x + Math.cos(ang) * dist, y + Math.sin(ang) * dist, false), 40 + i * 30);
+      }
+    });
+
+    // animation loop
+    function draw(now) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // edges first
+      for (let i = edges.length - 1; i >= 0; i--) {
+        const e = edges[i];
+        const age = now - e.born;
+        if (age > e.life) { edges.splice(i, 1); continue; }
+        const a = findNode(e.a), b = findNode(e.b);
+        if (!a || !b) { edges.splice(i, 1); continue; }
+
+        const t = age / e.life;
+        const draw_t = Math.min(1, age / 120); // draw-in over 120ms
+        const fade = t < 0.6 ? 1 : 1 - (t - 0.6) / 0.4;
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const x2 = a.x + dx * draw_t;
+        const y2 = a.y + dy * draw_t;
+
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(74,222,128,${0.35 * fade})`;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // nodes
+      for (let i = nodes.length - 1; i >= 0; i--) {
+        const n = nodes[i];
+        const age = now - n.born;
+        if (age > n.life) { nodes.splice(i, 1); continue; }
+
+        const t = age / n.life;
+        const fade = t < 0.6 ? 1 : 1 - (t - 0.6) / 0.4;
+        const grow = Math.min(1, age / 90);
+
+        n.x += n.vx;
+        n.y += n.vy;
+
+        // glow ring — guard against negative radius
+        const ringR = Math.max(0.1, n.r * 2.4 * grow + Math.sin(age / 250) * 0.8);
+        ctx.beginPath();
+        ctx.fillStyle = n.color === '#fbbf24'
+          ? `rgba(245,158,11,${0.18 * fade})`
+          : `rgba(34,197,94,${0.18 * fade})`;
+        ctx.arc(n.x, n.y, ringR, 0, Math.PI * 2);
+        ctx.fill();
+
+        // ring stroke
+        ctx.beginPath();
+        ctx.strokeStyle = n.color === '#fbbf24'
+          ? `rgba(251,191,36,${0.55 * fade})`
+          : `rgba(74,222,128,${0.55 * fade})`;
+        ctx.lineWidth = 1;
+        ctx.arc(n.x, n.y, ringR, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // core
+        const coreR = Math.max(0.1, n.r * grow);
+        ctx.beginPath();
+        ctx.fillStyle = n.color === '#fbbf24'
+          ? `rgba(251,191,36,${1 * fade})`
+          : `rgba(74,222,128,${1 * fade})`;
+        ctx.arc(n.x, n.y, coreR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  })();
+
+  // SMOOTH-SCROLL hash anchors w/o changing URL
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = a.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+</script>
+
+</body>
+</html>
