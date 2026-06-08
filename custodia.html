@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Custodia — Encrypted Vault for macOS</title>
+<meta name="description" content="Custodia — native macOS encrypted vault. Lock files, folders, and apps behind one master password. AES-256, invisible to Finder & Spotlight, 100% offline. Free download." />
+
+<meta property="og:title" content="Custodia — Encrypted Vault for macOS" />
+<meta property="og:description" content="Lock files, folders, and apps behind one master password. AES-256, invisible until unlocked, 100% offline." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/custodia-icon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Space Grotesk"', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  :root {
+    --bg: #05060f;
+    --surface: rgba(255, 255, 255, 0.04);
+    --surface-strong: rgba(255, 255, 255, 0.07);
+    --border: rgba(167, 139, 250, 0.18);
+    --text: #f8fafc;
+    --text-mute: #c4b5fd;
+    --accent: #a78bfa;
+    --accent-2: #22d3ee;
+    --ember: #f472b6;
+    --star: #ffffff;
+  }
+  html:not(.dark) {
+    --bg: #f5f3ff;
+    --surface: rgba(255, 255, 255, 0.65);
+    --surface-strong: rgba(255, 255, 255, 0.85);
+    --border: rgba(76, 29, 149, 0.18);
+    --text: #1e1b4b;
+    --text-mute: #4c1d95;
+    --accent: #7c3aed;
+    --accent-2: #0891b2;
+    --ember: #db2777;
+    --star: #4c1d95;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    transition: background-color 0.6s ease, color 0.6s ease;
+  }
+  .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+  /* COSMIC BACKDROP */
+  .cosmos-bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+  .nebula { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.55; animation: drift 22s ease-in-out infinite; }
+  .nebula-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, #6d28d9 0%, transparent 70%); }
+  .nebula-2 { top: 30%; right: -15%; width: 45vw; height: 45vw; background: radial-gradient(circle, #22d3ee 0%, transparent 70%); animation-delay: -7s; opacity: 0.35; }
+  .nebula-3 { bottom: -15%; left: 20%; width: 55vw; height: 55vw; background: radial-gradient(circle, #f472b6 0%, transparent 70%); animation-delay: -14s; opacity: 0.3; }
+  html:not(.dark) .nebula-1 { background: radial-gradient(circle, #c4b5fd 0%, transparent 70%); opacity: 0.7; }
+  html:not(.dark) .nebula-2 { background: radial-gradient(circle, #fde68a 0%, transparent 70%); opacity: 0.6; }
+  html:not(.dark) .nebula-3 { background: radial-gradient(circle, #fda4af 0%, transparent 70%); opacity: 0.5; }
+  @keyframes drift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(40px, -30px) scale(1.1); } }
+
+  .starfield {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 22%, var(--star), transparent),
+      radial-gradient(1px 1px at 28% 65%, var(--star), transparent),
+      radial-gradient(1.5px 1.5px at 42% 18%, var(--star), transparent),
+      radial-gradient(1px 1px at 55% 80%, var(--star), transparent),
+      radial-gradient(1px 1px at 68% 35%, var(--star), transparent),
+      radial-gradient(1.5px 1.5px at 82% 60%, var(--star), transparent),
+      radial-gradient(1px 1px at 92% 12%, var(--star), transparent),
+      radial-gradient(1px 1px at 7% 88%, var(--star), transparent),
+      radial-gradient(1px 1px at 35% 40%, var(--star), transparent),
+      radial-gradient(2px 2px at 78% 78%, var(--star), transparent),
+      radial-gradient(1px 1px at 15% 55%, var(--star), transparent),
+      radial-gradient(1.5px 1.5px at 88% 28%, var(--star), transparent);
+    background-size: 100% 100%; opacity: 0.85; animation: twinkle 6s ease-in-out infinite alternate;
+  }
+  html:not(.dark) .starfield { opacity: 0.25; animation: twinkle-light 8s ease-in-out infinite alternate; }
+  @keyframes twinkle { 0% { opacity: 0.4; } 100% { opacity: 0.95; } }
+  @keyframes twinkle-light { 0% { opacity: 0.15; } 100% { opacity: 0.35; } }
+
+  .grid-mesh {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    opacity: 0.4;
+  }
+
+  .glass { background: var(--surface); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); border: 1px solid var(--border); }
+  .glass-strong { background: var(--surface-strong); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); border: 1px solid var(--border); }
+
+  .glow-hover { transition: all 300ms ease; }
+  .glow-hover:hover { box-shadow: 0 0 40px -10px var(--accent), 0 0 80px -20px var(--accent-2); border-color: var(--accent); }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 50%, var(--ember) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  .btn-cosmic {
+    position: relative; display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: 500; cursor: pointer;
+    transition: all 250ms ease; border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+  .btn-cosmic:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 30px -5px var(--accent); transform: translateY(-2px); }
+  .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%); color: white; border: none; }
+  .btn-primary:hover { box-shadow: 0 0 40px -5px var(--accent), 0 0 60px -10px var(--accent-2); color: white; }
+
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 800ms ease, transform 800ms ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  .chip { display: inline-block; padding: 0.3rem 0.75rem; border-radius: 9999px; font-size: 0.78rem; font-weight: 500; background: var(--surface-strong); border: 1px solid var(--border); color: var(--text-mute); margin: 0.2rem; }
+
+  .scroll-indicator { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--ember)); z-index: 100; transition: width 100ms linear; width: 0; }
+
+  /* App icon float */
+  .app-icon { animation: float 6s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+  /* Step number badge */
+  .step-num {
+    flex-shrink: 0; width: 2.25rem; height: 2.25rem; border-radius: 9999px;
+    display: flex; align-items: center; justify-content: center; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white;
+  }
+
+  code, kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  kbd { background: var(--surface-strong); border: 1px solid var(--border); border-radius: 6px; padding: 0.1rem 0.45rem; font-size: 0.85em; }
+  .code-inline { background: var(--surface-strong); border: 1px solid var(--border); border-radius: 6px; padding: 0.1rem 0.45rem; font-size: 0.9em; color: var(--accent-2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nebula, .starfield, .app-icon, .reveal { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+  }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+</style>
+</head>
+
+<body class="font-body">
+
+<div id="scroll-indicator" class="scroll-indicator"></div>
+
+<!-- Cosmic backdrop -->
+<div class="cosmos-bg" aria-hidden="true">
+  <div class="starfield"></div>
+  <div class="grid-mesh"></div>
+  <div class="nebula nebula-1"></div>
+  <div class="nebula nebula-2"></div>
+  <div class="nebula nebula-3"></div>
+</div>
+
+<!-- Nav -->
+<header class="fixed top-4 left-4 right-4 z-50 flex justify-center">
+  <nav class="glass-strong rounded-full px-2 py-2 flex items-center gap-1 shadow-lg">
+    <a href="index.html" class="px-4 py-2 rounded-full text-sm font-medium hover:text-[var(--accent)] transition-colors cursor-pointer flex items-center gap-1.5">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span class="hidden sm:inline">Portfolio</span>
+    </a>
+    <a href="#features" class="px-4 py-2 rounded-full text-sm font-medium hover:text-[var(--accent)] transition-colors cursor-pointer">Features</a>
+    <a href="#download" class="px-4 py-2 rounded-full text-sm font-medium hover:text-[var(--accent)] transition-colors cursor-pointer">Download</a>
+    <a href="#install" class="px-4 py-2 rounded-full text-sm font-medium hover:text-[var(--accent)] transition-colors cursor-pointer hidden sm:block">Install</a>
+    <button id="theme-toggle" aria-label="Toggle theme" class="ml-1 w-9 h-9 flex items-center justify-center rounded-full border border-[var(--border)] hover:border-[var(--accent)] transition-colors cursor-pointer">
+      <svg id="icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section id="home" class="relative min-h-screen flex items-center justify-center px-6 pt-32 pb-20">
+  <div class="max-w-4xl mx-auto text-center reveal">
+    <img src="assets/custodia-icon.png" alt="Custodia app icon" width="160" height="160" class="app-icon mx-auto mb-8 w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl" />
+    <div class="inline-flex items-center gap-2 mb-6 glass px-4 py-2 rounded-full text-xs uppercase tracking-widest text-[var(--text-mute)]">
+      <span class="w-2 h-2 rounded-full bg-[var(--accent-2)] animate-pulse"></span>
+      Native macOS App · Free
+    </div>
+    <h1 class="font-display text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.05] mb-6">
+      Your private<br />
+      <span class="gradient-text">vault for macOS</span>
+    </h1>
+    <p class="text-lg md:text-xl text-[var(--text-mute)] max-w-2xl mx-auto mb-10 leading-relaxed">
+      Lock files, folders, and even apps behind one master password. Custodia stores them as an
+      <span class="text-[var(--accent)] font-medium">AES-256 encrypted vault</span> — invisible to Finder, Spotlight, and Terminal until you unlock it.
+      <span class="text-[var(--accent-2)] font-medium">100% offline. No cloud. No accounts.</span>
+    </p>
+    <div class="flex flex-wrap justify-center gap-3 mb-6">
+      <a href="downloads/Custodia-1.0.0.zip" class="btn-cosmic btn-primary text-base px-7 py-3.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Download for macOS
+      </a>
+      <a href="#install" class="btn-cosmic text-base px-7 py-3.5">
+        Install guide
+      </a>
+    </div>
+    <p class="text-xs text-[var(--text-mute)]">Version 1.0.0 · ~750 KB · Apple silicon &amp; Intel · macOS 13 Ventura or later</p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="relative px-6 py-24 max-w-6xl mx-auto">
+  <div class="text-center mb-16 reveal">
+    <div class="text-xs uppercase tracking-[0.3em] text-[var(--text-mute)] mb-3">Why Custodia</div>
+    <h2 class="font-display text-4xl md:text-5xl font-bold">One password. <span class="gradient-text">Total control.</span></h2>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="glass rounded-3xl p-7 glow-hover reveal">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, var(--accent), var(--accent-2));">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h3 class="font-display text-xl font-bold mb-2">Bank-grade encryption</h3>
+      <p class="text-sm text-[var(--text-mute)] leading-relaxed">AES-256 powered by Apple's own disk technology — the same standard trusted by banks and governments.</p>
+    </div>
+
+    <div class="glass rounded-3xl p-7 glow-hover reveal">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, var(--accent-2), var(--ember));">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      </div>
+      <h3 class="font-display text-xl font-bold mb-2">Truly invisible</h3>
+      <p class="text-sm text-[var(--text-mute)] leading-relaxed">Locked files — and even apps — vanish from Finder, Spotlight, and Terminal. No one knows they exist.</p>
+    </div>
+
+    <div class="glass rounded-3xl p-7 glow-hover reveal">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, var(--ember), var(--accent));">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m7.08 7.08l4.24 4.24M1 12h6m6 0h6"/></svg>
+      </div>
+      <h3 class="font-display text-xl font-bold mb-2">Lock in one tap</h3>
+      <p class="text-sm text-[var(--text-mute)] leading-relaxed">Seal everything instantly with <kbd>⌘L</kbd>, or let auto-lock handle it after 1, 5, or 15 minutes idle.</p>
+    </div>
+
+    <div class="glass rounded-3xl p-7 glow-hover reveal">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, var(--accent), var(--ember));">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14L21 3"/></svg>
+      </div>
+      <h3 class="font-display text-xl font-bold mb-2">Vault anything</h3>
+      <p class="text-sm text-[var(--text-mute)] leading-relaxed">Files, folders, and desktop apps. Open them straight from the unlocked vault, then restore to their exact origin.</p>
+    </div>
+
+    <div class="glass rounded-3xl p-7 glow-hover reveal">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, var(--accent-2), var(--accent));">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h3 class="font-display text-xl font-bold mb-2">Your data stays yours</h3>
+      <p class="text-sm text-[var(--text-mute)] leading-relaxed">100% offline. No cloud sync, no accounts, no tracking. Nothing ever leaves your Mac.</p>
+    </div>
+
+    <div class="glass rounded-3xl p-7 glow-hover reveal">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, var(--ember), var(--accent-2));">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
+      </div>
+      <h3 class="font-display text-xl font-bold mb-2">Native &amp; lightweight</h3>
+      <p class="text-sm text-[var(--text-mute)] leading-relaxed">Built with SwiftUI. Fast, tiny, no bloat. One portable encrypted backup, exportable any time.</p>
+    </div>
+  </div>
+
+  <div class="mt-12 text-center reveal">
+    <div class="text-xs uppercase tracking-[0.3em] text-[var(--text-mute)] mb-4">Perfect for</div>
+    <div class="max-w-3xl mx-auto">
+      <span class="chip">Tax documents</span><span class="chip">Passwords</span><span class="chip">Personal photos</span><span class="chip">Client files</span><span class="chip">Legal records</span><span class="chip">Anything private</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="relative px-6 py-20 max-w-5xl mx-auto">
+  <div class="glass-strong rounded-3xl p-8 md:p-12 reveal">
+    <div class="text-xs uppercase tracking-[0.3em] text-[var(--text-mute)] mb-3">Under the hood</div>
+    <h2 class="font-display text-3xl md:text-4xl font-bold mb-8">Built on Apple's own crypto</h2>
+    <div class="grid md:grid-cols-2 gap-x-10 gap-y-5 text-sm text-[var(--text-mute)] leading-relaxed">
+      <div class="flex gap-3"><span class="text-[var(--accent)]">▹</span><p>Vault is an AES-256 encrypted sparsebundle created via Apple's <span class="code-inline">hdiutil</span> — sparse, so it only uses the disk space it actually holds.</p></div>
+      <div class="flex gap-3"><span class="text-[var(--accent)]">▹</span><p>Your master password is passed to <span class="code-inline">hdiutil</span> over stdin — never via command-line args, never written to disk.</p></div>
+      <div class="flex gap-3"><span class="text-[var(--accent)]">▹</span><p>Unlocked, it mounts at <span class="code-inline">/Volumes/CustodiaVault</span>, hidden from the Finder sidebar. Locked, only an opaque blob remains.</p></div>
+      <div class="flex gap-3"><span class="text-[var(--accent)]">▹</span><p>Back up to a single compressed, encrypted <span class="code-inline">.dmg</span> protected by your same password — restore by double-clicking it, no Custodia required.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section id="download" class="relative px-6 py-20 max-w-4xl mx-auto text-center">
+  <div class="reveal">
+    <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">Get <span class="gradient-text">Custodia</span></h2>
+    <p class="text-[var(--text-mute)] mb-8 max-w-xl mx-auto">Free download. Works on Apple silicon and Intel Macs running macOS 13 Ventura or later.</p>
+    <a href="downloads/Custodia-1.0.0.zip" class="btn-cosmic btn-primary text-base px-8 py-4 inline-flex">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Download Custodia 1.0.0
+    </a>
+    <p class="text-xs text-[var(--text-mute)] mt-4">.zip · ~750 KB · Universal binary</p>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section id="install" class="relative px-6 py-20 max-w-3xl mx-auto">
+  <div class="text-center mb-12 reveal">
+    <div class="text-xs uppercase tracking-[0.3em] text-[var(--text-mute)] mb-3">First launch</div>
+    <h2 class="font-display text-3xl md:text-4xl font-bold">Install in 30 seconds</h2>
+  </div>
+
+  <div class="space-y-5">
+    <div class="glass rounded-2xl p-6 flex gap-4 items-start reveal">
+      <div class="step-num">1</div>
+      <div>
+        <h3 class="font-display font-bold text-lg mb-1">Unzip &amp; move to Applications</h3>
+        <p class="text-sm text-[var(--text-mute)] leading-relaxed">Double-click the downloaded <span class="code-inline">.zip</span>, then drag <strong>Custodia.app</strong> into your <strong>Applications</strong> folder.</p>
+      </div>
+    </div>
+
+    <div class="glass rounded-2xl p-6 flex gap-4 items-start reveal">
+      <div class="step-num">2</div>
+      <div>
+        <h3 class="font-display font-bold text-lg mb-1">Open it the first time</h3>
+        <p class="text-sm text-[var(--text-mute)] leading-relaxed">Custodia is a free, independently-built app and isn't signed with a paid Apple Developer certificate, so macOS asks you to confirm on first launch. <strong>Right-click (or Control-click) Custodia → Open → Open.</strong> You only do this once.</p>
+      </div>
+    </div>
+
+    <div class="glass rounded-2xl p-6 flex gap-4 items-start reveal">
+      <div class="step-num">3</div>
+      <div>
+        <h3 class="font-display font-bold text-lg mb-1">Set your master password</h3>
+        <p class="text-sm text-[var(--text-mute)] leading-relaxed">Pick a password of at least 8 characters. This unlocks everything in your vault.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gatekeeper fallback -->
+  <div class="glass-strong rounded-2xl p-6 mt-8 reveal">
+    <h3 class="font-display font-bold text-base mb-2 flex items-center gap-2">
+      <svg class="w-5 h-5 text-[var(--accent-2)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      "Apple could not verify Custodia"?
+    </h3>
+    <p class="text-sm text-[var(--text-mute)] leading-relaxed mb-3">On recent macOS, if right-click → Open doesn't show an <em>Open</em> button, go to:</p>
+    <p class="text-sm text-[var(--text-mute)] leading-relaxed mb-3"> <strong> System Settings → Privacy &amp; Security</strong>, scroll to the Security section, and click <strong>"Open Anyway"</strong> next to the Custodia message.</p>
+    <p class="text-sm text-[var(--text-mute)] leading-relaxed">Advanced users can instead clear the quarantine flag in Terminal:</p>
+    <pre class="mt-2 text-xs overflow-x-auto"><code class="code-inline" style="display:block; padding:0.75rem 1rem;">xattr -dr com.apple.quarantine /Applications/Custodia.app</code></pre>
+  </div>
+
+  <!-- Security note -->
+  <div class="rounded-2xl p-6 mt-6 reveal" style="background: var(--surface); border: 1px solid var(--ember);">
+    <h3 class="font-display font-bold text-base mb-2 flex items-center gap-2" style="color: var(--ember);">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      No password recovery
+    </h3>
+    <p class="text-sm text-[var(--text-mute)] leading-relaxed">Your master password is the only key — there is no reset, no backdoor, no "forgot password." If you lose it, the vault's contents are unrecoverable. That's the point. Keep it somewhere safe.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="relative px-6 py-12 text-center text-xs text-[var(--text-mute)]">
+  <div class="flex items-center justify-center gap-2 mb-3">
+    <span class="w-1 h-1 rounded-full bg-[var(--accent)]"></span>
+    <span class="font-display tracking-widest uppercase">Custodia</span>
+    <span class="w-1 h-1 rounded-full bg-[var(--accent-2)]"></span>
+  </div>
+  <p class="mb-2">Built by <a href="index.html" class="text-[var(--accent)] hover:underline">Renz Ivan Enguio</a></p>
+  <div>&copy; <span id="year"></span> · Your secrets deserve a custodian</div>
+</footer>
+
+<script>
+  const root = document.documentElement;
+  const toggle = document.getElementById('theme-toggle');
+  const iconMoon = document.getElementById('icon-moon');
+  const iconSun = document.getElementById('icon-sun');
+
+  const stored = localStorage.getItem('theme');
+  const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+  setTheme(stored || (prefersLight ? 'light' : 'dark'));
+
+  function setTheme(mode) {
+    if (mode === 'light') {
+      root.classList.remove('dark');
+      iconMoon.classList.remove('hidden'); iconSun.classList.add('hidden');
+    } else {
+      root.classList.add('dark');
+      iconMoon.classList.add('hidden'); iconSun.classList.remove('hidden');
+    }
+    localStorage.setItem('theme', mode);
+  }
+  toggle.addEventListener('click', () => setTheme(root.classList.contains('dark') ? 'light' : 'dark'));
+
+  const indicator = document.getElementById('scroll-indicator');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    indicator.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100 + '%';
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
